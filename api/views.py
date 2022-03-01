@@ -1,5 +1,4 @@
-from distutils.log import error
-from inspect import getmembers
+from time import sleep
 import boto3
 from rest_framework.permissions import IsAuthenticated
 
@@ -34,7 +33,7 @@ class UserRegistrationAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         token = Token.objects.create(user=user.user)
-        return Response({"user": "User", "data": {"token": token.key}})
+        return Response({"data": {"token": token.key}})
 
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
@@ -70,3 +69,28 @@ class GetUserStats(generics.GenericAPIView):
         file_content = content_object.get()['Body'].read().decode('utf-8')
         json_content = json.loads(file_content)
         return JsonResponse(data={"data":json_content}, safe=False)
+
+class GetUserStatsTest(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (BearerToken,)
+    def get(self,request,*args,**kwargs):
+        user = AppUser.objects.filter(user=request.user).first()
+        json_content = None
+        with open('test.json') as json_file:
+            json_content = json.load(json_file)
+        sleep(3)
+        return JsonResponse(data={"data":json_content}, safe=False)
+
+class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (BearerToken,)
+    def post(self,request,*args,**kwargs):
+        user = AppUser.objects.filter(user=request.user).first()
+        sleep(10)
+        return JsonResponse(data={"message":"Successfully Retrieved"}, safe=False)
+class GetUserProfile(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (BearerToken,)
+    def get(self,request,*args,**kwargs):
+        user = AppUser.objects.filter(user=request.user).first()        
+        return JsonResponse(data={"data":{"username":user.username}}, safe=False)
