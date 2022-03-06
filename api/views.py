@@ -15,6 +15,8 @@ from django.core import serializers
 from rest_framework.authtoken.models import Token
 import json
 from django.core import serializers
+from django.core.mail import send_mail
+
 
 session = boto3.Session(
 aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -78,7 +80,7 @@ class GetUserStatsTest(generics.GenericAPIView):
         json_content = None
         with open('test.json') as json_file:
             json_content = json.load(json_file)
-        sleep(3)
+        sleep(5)
         return JsonResponse(data={"data":json_content}, safe=False)
 
 class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
@@ -94,3 +96,11 @@ class GetUserProfile(generics.GenericAPIView):
     def get(self,request,*args,**kwargs):
         user = AppUser.objects.filter(user=request.user).first()        
         return JsonResponse(data={"data":{"username":user.username}}, safe=False)
+
+class HandleMail(generics.GenericAPIView):
+    def post(self,request,*args,**kwargs):
+        name = request.data['name']
+        message = request.data['message']
+        email = request.data['email']
+        send_mail(f'Regarding Youtube Wrapped from ,{name} email : {email}',message,email,['ytwrpd@gmail.com'],fail_silently=False)
+        return JsonResponse(data={'message':'successful'})
