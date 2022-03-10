@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import AppUser
 
+
 class CreateUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppUser
@@ -26,7 +27,7 @@ class CreateUserProfileSerializer(serializers.ModelSerializer):
             user=user,
             username=validated_data["username"],
             email=validated_data["email"],
+            is_active=False,
         )
         user_profile.save()
         return user_profile
-

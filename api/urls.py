@@ -8,6 +8,7 @@ urlpatterns = [
     path("stats",GetUserStats.as_view()),
     path("check",CheckUserStatsStatus.as_view()),
     path('email',HandleMail.as_view()),
+    path('email/verify',EmailVerification.as_view()),
     path("test/stats",GetUserStatsTest.as_view()),
     path("test/generate", LoadNewUserStatsIntoS3.as_view())
 ]
