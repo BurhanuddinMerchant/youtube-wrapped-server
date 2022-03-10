@@ -7,11 +7,13 @@ import uuid
 # Create your models here.
 class AppUser(models.Model):
     user = models.OneToOneField(User, on_delete=CASCADE, null=True, blank=True)
-    auth_token = models.CharField(max_length=256,blank=True,default="",null=True)
+    auth_token = models.CharField(max_length=256, blank=True, default="", null=True)
     username = models.CharField(max_length=256)
-    email = models.EmailField(max_length=256)
-    password = models.CharField(max_length=64,blank=True,null=True)
-    stats_id = models.UUIDField(primary_key = True,default = uuid.uuid4,editable = False)
+    email = models.EmailField(max_length=256, unique=True)
+    password = models.CharField(max_length=64, blank=True, null=True)
+    stats_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     are_stats_generated = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+
     def __str__(self) -> str:
         return self.username
