@@ -3,7 +3,7 @@ from time import sleep
 import boto3
 from rest_framework.permissions import IsAuthenticated
 import os
-from api.utils import requestHelper
+from api.utils import get_tokens_for_user, requestHelper
 from server.settings import (
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
@@ -12,17 +12,13 @@ from server.settings import (
 from .models import AppUser
 from .serializers import CreateUserProfileSerializer
 from rest_framework import generics
-from .auth import BearerToken
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect, JsonResponse
-from django.core import serializers
 from rest_framework.authtoken.models import Token
 import json
 from django.core import serializers
 from django.core.mail import send_mail
 from rest_framework.authtoken.models import Token
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 
 session = boto3.Session(
     aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY
@@ -39,9 +35,10 @@ class UserRegistrationAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        token = Token.objects.create(user=user.user)
+        # token = Token.objects.create(user=user.user)
+        token = get_tokens_for_user(user)
         host_url = os.environ["BASE_HOST_URL"]
-        verification_url = f"{host_url}/api/email/verify?token={token}"
+        verification_url = f"{host_url}/api/email/verify?token={token['access']}"
 
         send_mail(
             "Regarding YouTube Wrapped Account Activation",
@@ -50,12 +47,11 @@ class UserRegistrationAPI(generics.GenericAPIView):
             [user.email],
             fail_silently=False,
         )
-        return Response({"data": {"token": token.key}})
+        return Response({"data": {"token": token}})
 
 
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BearerToken,)
 
     def post(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
@@ -77,7 +73,6 @@ class LoadNewUserStatsIntoS3(generics.GenericAPIView):
 
 class CheckUserStatsStatus(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BearerToken,)
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
@@ -94,7 +89,6 @@ class CheckUserStatsStatus(generics.GenericAPIView):
 
 class GetUserStats(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BearerToken,)
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
@@ -108,7 +102,6 @@ class GetUserStats(generics.GenericAPIView):
 
 class GetUserStatsTest(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BearerToken,)
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
@@ -121,7 +114,6 @@ class GetUserStatsTest(generics.GenericAPIView):
 
 class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BearerToken,)
 
     def post(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
@@ -131,7 +123,6 @@ class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
 
 class GetUserProfile(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (BearerToken,)
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
