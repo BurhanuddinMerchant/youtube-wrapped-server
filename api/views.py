@@ -1,4 +1,3 @@
-from distutils.log import error
 from time import sleep
 import boto3
 from rest_framework.permissions import IsAuthenticated
@@ -14,11 +13,11 @@ from .serializers import CreateUserProfileSerializer
 from rest_framework import generics
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect, JsonResponse
-from rest_framework.authtoken.models import Token
 import json
-from django.core import serializers
 from django.core.mail import send_mail
 from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import AccessToken
+from django.contrib.auth.models import User
 
 session = boto3.Session(
     aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY
@@ -48,6 +47,23 @@ class UserRegistrationAPI(generics.GenericAPIView):
             fail_silently=False,
         )
         return Response({"data": {"token": token}})
+
+
+class ResendVerificationEmailAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        host_url = os.environ["BASE_HOST_URL"]
+        token = request.META["HTTP_AUTHORIZATION"][7:]
+        verification_url = f"{host_url}/api/email/verify?token={token}"
+        send_mail(
+            "Regarding YouTube Wrapped Account Activation",
+            f"Thank You {request.user.username}!, please go to {verification_url} to activate your account",
+            "ytwrpd@gmail.com",
+            [request.user.email],
+            fail_silently=False,
+        )
+        return Response({"data": {"message": "email sent successfully"}})
 
 
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
@@ -117,6 +133,8 @@ class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
+        user.are_stats_generated = True
+        user.save()
         sleep(10)
         return JsonResponse(data={"message": "Successfully Retrieved"}, safe=False)
 
@@ -130,6 +148,8 @@ class GetUserProfile(generics.GenericAPIView):
 
 
 class HandleMail(generics.GenericAPIView):
+    permission_classes = ()
+
     def post(self, request, *args, **kwargs):
         name = request.data["name"]
         message = request.data["message"]
@@ -148,13 +168,15 @@ class EmailVerification(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         token = request.query_params.get("token")
         try:
-            user = Token.objects.get(key=token).user
+            access_token = AccessToken(token)
+            user_id = access_token["user_id"]
+            user = User.objects.get(id=user_id)
             app_user = AppUser.objects.filter(user=user).first()
             if app_user.is_active == False:
                 app_user.is_active = True
                 send_mail(
                     "Regarding YouTube Wrapped Account Activation",
-                    f"Thank You {user.username}!, Your account is verified you can now go ahead and generate your wrap",
+                    f"Thank You {user.username}!, Your account is verified. You can now go ahead and generate your wrap",
                     "ytwrpd@gmail.com",
                     [user.email],
                     fail_silently=False,
@@ -167,5 +189,10 @@ class EmailVerification(generics.GenericAPIView):
                 return HttpResponseRedirect(
                     redirect_to="https://youtubewrapped.ml/login"
                 )
-        except Token.DoesNotExist:
-            return JsonResponse(data={"message": "User does not exist"}, status=404)
+        except Exception:
+            return JsonResponse(
+                data={
+                    "message": "User does not exist or The verification link has expired, please login and reavail the verification email"
+                },
+                status=404,
+            )

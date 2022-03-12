@@ -10,8 +10,11 @@ urlpatterns = [
     path("check", CheckUserStatsStatus.as_view(), name="check_user_status"),
     path("email", HandleMail.as_view(), name="feedback"),
     path("email/verify", EmailVerification.as_view(), name="verify_email"),
-    path("token/", TokenObtainPairView.as_view(), name="login"),
-    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path(
+        "email/resend", ResendVerificationEmailAPI.as_view(), name="verify_email_resend"
+    ),
+    path("token", TokenObtainPairView.as_view(), name="login"),
+    path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("test/stats", GetUserStatsTest.as_view()),
-    path("test/generate", LoadNewUserStatsIntoS3.as_view()),
+    path("test/generate", LoadNewUserStatsIntoS3Test.as_view()),
 ]

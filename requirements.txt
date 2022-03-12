@@ -58,7 +58,6 @@ tldextract==3.2.0
 toml==0.10.2
 tomli==2.0.1
 typing_extensions==4.1.1
-uritemplate==4.1.1
 urllib3==1.26.8
 whitenoise==6.0.0
 zope.event==4.5.0
