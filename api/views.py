@@ -117,6 +117,7 @@ class GetUserStats(generics.GenericAPIView):
         )
         file_content = content_object.get()["Body"].read().decode("utf-8")
         json_content = json.loads(file_content)
+        json_content["username"] = user.username
         return JsonResponse(data={"data": json_content}, safe=False)
 
 
@@ -129,6 +130,7 @@ class GetUserStatsTest(generics.GenericAPIView):
         with open("test.json") as json_file:
             json_content = json.load(json_file)
         sleep(5)
+        json_content["username"] = user.username
         return JsonResponse(data={"data": json_content}, safe=False)
 
 
