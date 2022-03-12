@@ -1,4 +1,5 @@
 from time import sleep
+from xmlrpc.client import ResponseError
 import boto3
 from rest_framework.permissions import IsAuthenticated
 import os
@@ -53,17 +54,20 @@ class ResendVerificationEmailAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        host_url = os.environ["BASE_HOST_URL"]
-        token = request.META["HTTP_AUTHORIZATION"][7:]
-        verification_url = f"{host_url}/api/email/verify?token={token}"
-        send_mail(
-            "Regarding YouTube Wrapped Account Activation",
-            f"Thank You {request.user.username}!, please go to {verification_url} to activate your account",
-            "ytwrpd@gmail.com",
-            [request.user.email],
-            fail_silently=False,
-        )
-        return Response({"data": {"message": "email sent successfully"}})
+        user = AppUser.objects.filter(user=request.user).first()
+        if user.is_active == False:
+            host_url = os.environ["BASE_HOST_URL"]
+            token = request.META["HTTP_AUTHORIZATION"][7:]
+            verification_url = f"{host_url}/api/email/verify?token={token}"
+            send_mail(
+                "Regarding YouTube Wrapped Account Activation",
+                f"Thank You {request.user.username}!, please go to {verification_url} to activate your account",
+                "ytwrpd@gmail.com",
+                [request.user.email],
+                fail_silently=False,
+            )
+            return Response({"data": {"message": "email sent successfully"}})
+        return JsonResponse({"error": "User Already Acitvated"}, status=400)
 
 
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
