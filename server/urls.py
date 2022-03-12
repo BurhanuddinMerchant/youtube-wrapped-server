@@ -16,13 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
-from rest_framework.authtoken import views
-
-from api.views import GetUserStats
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
-    path("api/login", views.obtain_auth_token),
     path("silk", include("silk.urls", namespace="silk")),
 ]

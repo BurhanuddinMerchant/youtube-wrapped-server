@@ -30,4 +30,4 @@ class CreateUserProfileSerializer(serializers.ModelSerializer):
             is_active=False,
         )
         user_profile.save()
-        return user_profile
+        return user
