@@ -5,7 +5,7 @@ from .views import *
 urlpatterns = [
     path("register", UserRegistrationAPI.as_view(), name="signup"),
     path("generate", LoadNewUserStatsIntoS3.as_view(), name="generate_stats"),
-    path("profile", GetUserProfile.as_view(), name="user_profile"),
+    path("profile", UserProfile.as_view(), name="user_profile"),
     path("stats", GetUserStats.as_view(), name="user_stats"),
     path("check", CheckUserStatsStatus.as_view(), name="check_user_status"),
     path("email", HandleMail.as_view(), name="feedback"),

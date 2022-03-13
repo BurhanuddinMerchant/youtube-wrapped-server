@@ -145,12 +145,16 @@ class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
         return JsonResponse(data={"message": "Successfully Retrieved"}, safe=False)
 
 
-class GetUserProfile(generics.GenericAPIView):
+class UserProfile(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
         return JsonResponse(data={"data": {"username": user.username}}, safe=False)
+
+    def delete(self, request, *args, **kwargs):
+        request.user.delete()
+        return JsonResponse({"message": "Account Deleted Successfully"})
 
 
 class HandleMail(generics.GenericAPIView):
