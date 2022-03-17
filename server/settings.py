@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "api.apps.ApiConfig",
     "corsheaders",
     "silk",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
