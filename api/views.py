@@ -10,7 +10,12 @@ from server.settings import (
     AWS_STORAGE_BUCKET_NAME,
 )
 from .models import AppUser
-from .serializers import CreateUserProfileSerializer
+from .serializers import (
+    CreateUserProfileSerializer,
+    EmailVerificationSerializer,
+    HandleMailSerializer,
+    UserProfileSerializer,
+)
 from rest_framework import generics
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect, JsonResponse
@@ -52,9 +57,13 @@ class UserRegistrationAPI(generics.GenericAPIView):
 
 class ResendVerificationEmailAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def post(self, request, *args, **kwargs):
-        user = AppUser.objects.filter(user=request.user).first()
+        # user = AppUser.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         if user.is_active == False:
             host_url = os.environ["BASE_HOST_URL"]
             token = request.META["HTTP_AUTHORIZATION"][7:]
@@ -72,9 +81,13 @@ class ResendVerificationEmailAPI(generics.GenericAPIView):
 
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def post(self, request, *args, **kwargs):
-        user = AppUser.objects.filter(user=request.user).first()
+        # user = AppUser.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         liked_data = requestHelper("like", request.data["auth_token"])
         disliked_data = requestHelper("dislike", request.data["auth_token"])
         if liked_data == None or disliked_data == None:
@@ -93,9 +106,13 @@ class LoadNewUserStatsIntoS3(generics.GenericAPIView):
 
 class CheckUserStatsStatus(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def get(self, request, *args, **kwargs):
-        user = AppUser.objects.filter(user=request.user).first()
+        # user = AppUser.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         return JsonResponse(
             data={
                 "data": {
@@ -109,9 +126,13 @@ class CheckUserStatsStatus(generics.GenericAPIView):
 
 class GetUserStats(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def get(self, request, *args, **kwargs):
-        user = AppUser.objects.filter(user=request.user).first()
+        # user = AppUser.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         content_object = s3.Object(
             AWS_STORAGE_BUCKET_NAME, f"processed/{user.stats_id}.json"
         )
@@ -123,9 +144,13 @@ class GetUserStats(generics.GenericAPIView):
 
 class GetUserStatsTest(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def get(self, request, *args, **kwargs):
-        user = AppUser.objects.filter(user=request.user).first()
+        # user = AppUser.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         json_content = None
         with open("test.json") as json_file:
             json_content = json.load(json_file)
@@ -136,9 +161,13 @@ class GetUserStatsTest(generics.GenericAPIView):
 
 class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def post(self, request, *args, **kwargs):
-        user = AppUser.objects.filter(user=request.user).first()
+        # user = AppUser.objects.filter(user=request.user).first()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
         user.are_stats_generated = True
         user.save()
         sleep(10)
@@ -147,6 +176,7 @@ class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
 
 class UserProfile(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
@@ -159,11 +189,15 @@ class UserProfile(generics.GenericAPIView):
 
 class HandleMail(generics.GenericAPIView):
     permission_classes = ()
+    serializer_class = HandleMailSerializer
 
     def post(self, request, *args, **kwargs):
-        name = request.data["name"]
-        message = request.data["message"]
-        email = request.data["email"]
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        Email = serializer.save()
+        name = Email["name"]
+        message = Email["message"]
+        email = Email["email"]
         send_mail(
             f"Regarding Youtube Wrapped from ,{name} email : {email}",
             message,
@@ -175,8 +209,13 @@ class HandleMail(generics.GenericAPIView):
 
 
 class EmailVerification(generics.GenericAPIView):
+    serializer_class = EmailVerificationSerializer
+
     def get(self, request, *args, **kwargs):
-        token = request.query_params.get("token")
+        # token = request.query_params.get("token")
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.save()
         try:
             access_token = AccessToken(token)
             user_id = access_token["user_id"]
