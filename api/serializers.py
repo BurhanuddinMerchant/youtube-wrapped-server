@@ -31,3 +31,30 @@ class CreateUserProfileSerializer(serializers.ModelSerializer):
         )
         user_profile.save()
         return user
+
+
+class UserProfileSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = AppUser.objects.filter(user=request.user).first()
+        return user
+
+
+class EmailVerificationSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        request = self.context.get("request")
+        token = request.query_params.get("token")
+        return token
+
+
+class HandleMailSerializer(serializers.Serializer):
+    class Meta:
+        fields = ("name", "message", "email")
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        name = request.data["name"]
+        message = request.data["message"]
+        email = request.data["email"]
+        Email = {"name": name, "message": message, "email": email}
+        return Email
