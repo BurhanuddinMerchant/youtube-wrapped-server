@@ -19,6 +19,7 @@ from django.urls.conf import include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from server.shared.decorators import superuser_only
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -28,6 +29,7 @@ schema_view = get_schema_view(
         terms_of_service="https://privacy-policy.youtubewrapped.ml/",
         contact=openapi.Contact(email="burhanuddin.cstech@gmail.com"),
     ),
+    public=True,
     permission_classes=[permissions.AllowAny],
 )
 urlpatterns = [
@@ -38,15 +40,17 @@ urlpatterns = [
 urlpatterns += [
     re_path(
         r"^swagger(?P<format>\.json|\.yaml)$",
-        schema_view.without_ui(cache_timeout=0),
+        superuser_only(schema_view.without_ui(cache_timeout=0)),
         name="schema-json",
     ),
     re_path(
         r"^swagger/$",
-        schema_view.with_ui("swagger", cache_timeout=0),
+        superuser_only(schema_view.with_ui("swagger", cache_timeout=0)),
         name="schema-swagger-ui",
     ),
     re_path(
-        r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
+        r"^redoc/$",
+        superuser_only(schema_view.with_ui("redoc", cache_timeout=0)),
+        name="schema-redoc",
     ),
 ]
