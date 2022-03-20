@@ -14,6 +14,7 @@ from .serializers import (
     CreateUserProfileSerializer,
     EmailVerificationSerializer,
     HandleMailSerializer,
+    RecaptchaVerifySerializer,
     UserProfileSerializer,
 )
 from rest_framework import generics
@@ -24,6 +25,7 @@ from django.core.mail import send_mail
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth.models import User
+import requests
 
 session = boto3.Session(
     aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY
@@ -245,3 +247,21 @@ class EmailVerification(generics.GenericAPIView):
                 },
                 status=404,
             )
+
+
+class RecaptchaVerifyAPI(generics.GenericAPIView):
+    serializer_class = RecaptchaVerifySerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.save()
+        RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY")
+        url = "https://www.google.com/recaptcha/api/siteverify"
+        result = requests.post(
+            url=url, params={"secret": RECAPTCHA_SECRET_KEY, "response": token}
+        )
+        result = result.json()
+        if result["score"] < 0.5:
+            return JsonResponse(data={"verified": False})
+        return JsonResponse(data={"verified": result["success"]})

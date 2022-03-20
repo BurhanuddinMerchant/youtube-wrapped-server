@@ -15,6 +15,7 @@ urlpatterns = [
     ),
     path("token", TokenObtainPairView.as_view(), name="login"),
     path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
+    path("recaptcha", RecaptchaVerifyAPI.as_view(), name="verify_recaptcha"),
     path("test/stats", GetUserStatsTest.as_view()),
     path("test/generate", LoadNewUserStatsIntoS3Test.as_view()),
 ]

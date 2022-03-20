@@ -58,3 +58,10 @@ class HandleMailSerializer(serializers.Serializer):
         email = request.data["email"]
         Email = {"name": name, "message": message, "email": email}
         return Email
+
+
+class RecaptchaVerifySerializer(serializers.Serializer):
+    def create(self, validated_data):
+        request = self.context.get("request")
+        token = request.query_params.get("token")
+        return token
