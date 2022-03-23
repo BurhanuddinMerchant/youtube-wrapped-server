@@ -262,6 +262,4 @@ class RecaptchaVerifyAPI(generics.GenericAPIView):
             url=url, params={"secret": RECAPTCHA_SECRET_KEY, "response": token}
         )
         result = result.json()
-        if result["score"] < 0.5:
-            return JsonResponse(data={"verified": False})
         return JsonResponse(data={"verified": result["success"]})
