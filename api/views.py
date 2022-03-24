@@ -36,6 +36,7 @@ s3 = session.resource("s3")
 # Create your views here.
 class UserRegistrationAPI(generics.GenericAPIView):
     serializer_class = CreateUserProfileSerializer
+    throttle_scope = "anon"
 
     def post(self, request, *args, **kwargs):
 
@@ -60,6 +61,7 @@ class UserRegistrationAPI(generics.GenericAPIView):
 class ResendVerificationEmailAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
+    throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
         # user = AppUser.objects.filter(user=request.user).first()
@@ -84,6 +86,7 @@ class ResendVerificationEmailAPI(generics.GenericAPIView):
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
+    throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
         # user = AppUser.objects.filter(user=request.user).first()
@@ -109,6 +112,7 @@ class LoadNewUserStatsIntoS3(generics.GenericAPIView):
 class CheckUserStatsStatus(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
+    throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
         # user = AppUser.objects.filter(user=request.user).first()
@@ -129,6 +133,7 @@ class CheckUserStatsStatus(generics.GenericAPIView):
 class GetUserStats(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
+    throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
         # user = AppUser.objects.filter(user=request.user).first()
@@ -147,6 +152,7 @@ class GetUserStats(generics.GenericAPIView):
 class GetUserStatsTest(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
+    throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
         # user = AppUser.objects.filter(user=request.user).first()
@@ -164,6 +170,7 @@ class GetUserStatsTest(generics.GenericAPIView):
 class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
+    throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
         # user = AppUser.objects.filter(user=request.user).first()
@@ -192,6 +199,7 @@ class UserProfile(generics.GenericAPIView):
 class HandleMail(generics.GenericAPIView):
     permission_classes = ()
     serializer_class = HandleMailSerializer
+    throttle_scope = "anon"
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -212,6 +220,7 @@ class HandleMail(generics.GenericAPIView):
 
 class EmailVerification(generics.GenericAPIView):
     serializer_class = EmailVerificationSerializer
+    throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
         # token = request.query_params.get("token")
@@ -251,6 +260,7 @@ class EmailVerification(generics.GenericAPIView):
 
 class RecaptchaVerifyAPI(generics.GenericAPIView):
     serializer_class = RecaptchaVerifySerializer
+    throttle_scope = "anon"
 
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -263,3 +273,10 @@ class RecaptchaVerifyAPI(generics.GenericAPIView):
         )
         result = result.json()
         return JsonResponse(data={"verified": result["success"]})
+
+
+class TestThrottleAPI(generics.GenericAPIView):
+    throttle_scope = "anon"
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse(data={"status": "OK"})
