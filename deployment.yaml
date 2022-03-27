@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: youtube-wrapped-server
 spec:
-  replicas: 2
+  # replicas: 2
   selector:
     matchLabels:
       app: youtube-wrapped-server
@@ -21,6 +21,7 @@ spec:
         resources:
           limits:
             memory: "512Mi"
-            cpu: "500m"
+            cpu: "250m"
         ports:
         - containerPort: 8000
+
