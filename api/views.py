@@ -1,5 +1,4 @@
 from time import sleep
-from xmlrpc.client import ResponseError
 import boto3
 from rest_framework.permissions import IsAuthenticated
 import os
@@ -21,8 +20,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect, JsonResponse
 import json
-from django.core.mail import send_mail
-from rest_framework.authtoken.models import Token
+from django.core.mail import send_mail, EmailMultiAlternatives, EmailMessage
 from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth.models import User
 import requests
@@ -48,13 +46,16 @@ class UserRegistrationAPI(generics.GenericAPIView):
         host_url = os.environ["BASE_HOST_URL"]
         verification_url = f"{host_url}/api/email/verify?token={token['access']}"
 
-        send_mail(
+        subject, from_email, to = (
             "Regarding YouTube Wrapped Account Activation",
-            f"Thank You {user.username}!, please go to {verification_url} to activate your account",
             "ytwrpd@gmail.com",
-            [user.email],
-            fail_silently=False,
+            user.email,
         )
+        text_content = "Thank You {user.username}!, please go to {verification_url} to activate your account"
+        html_content = f"<body> <div><div style='background-color: rgb(248, 219, 219); padding: 1em; border-radius: 10px; font-family: sans-serif;text-align: center;'><h1>Welcome To Youtube Wrapped {user.username}!</h1><div style=''>Please Verify your email by clicking the link below</div><div style='background: rgb(248 113 113);color: white;border: 0;border-radius: 5px;margin-top: 1em;'><a href='{verification_url}' target='_blank' style='text-decoration: none; font-size: 1.5rem; padding: 1em'>Verify</a></div></div></div></body>"
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         return Response({"data": {"token": token}})
 
 
@@ -64,7 +65,6 @@ class ResendVerificationEmailAPI(generics.GenericAPIView):
     throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
-        # user = AppUser.objects.filter(user=request.user).first()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -72,13 +72,16 @@ class ResendVerificationEmailAPI(generics.GenericAPIView):
             host_url = os.environ["BASE_HOST_URL"]
             token = request.META["HTTP_AUTHORIZATION"][7:]
             verification_url = f"{host_url}/api/email/verify?token={token}"
-            send_mail(
+            subject, from_email, to = (
                 "Regarding YouTube Wrapped Account Activation",
-                f"Thank You {request.user.username}!, please go to {verification_url} to activate your account",
                 "ytwrpd@gmail.com",
-                [request.user.email],
-                fail_silently=False,
+                user.email,
             )
+            text_content = "Thank You {user.username}!, please go to {verification_url} to activate your account"
+            html_content = f"<body> <div><div style='background-color: rgb(248, 219, 219); padding: 1em; border-radius: 10px; font-family: sans-serif;text-align: center;'><h1>Welcome To Youtube Wrapped {user.username}!</h1><div style=''>Please Verify your email by clicking the link below</div><div style='background: rgb(248 113 113);color: white;border: 0;border-radius: 5px;margin-top: 1em;'><a href='{verification_url}' target='_blank' style='text-decoration: none; font-size: 1.5rem; padding: 1em'>Verify</a></div></div></div></body>"
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
             return Response({"data": {"message": "email sent successfully"}})
         return JsonResponse({"error": "User Already Acitvated"}, status=400)
 
@@ -234,13 +237,16 @@ class EmailVerification(generics.GenericAPIView):
             app_user = AppUser.objects.filter(user=user).first()
             if app_user.is_active == False:
                 app_user.is_active = True
-                send_mail(
+                subject, from_email, to = (
                     "Regarding YouTube Wrapped Account Activation",
-                    f"Thank You {user.username}!, Your account is verified. You can now go ahead and generate your wrap",
                     "ytwrpd@gmail.com",
-                    [user.email],
-                    fail_silently=False,
+                    user.email,
                 )
+                text_content = f"Thank You {user.username}!, Your account is verified. You can now go ahead and generate your wrap"
+                html_content = f"<body> <div><div style='background-color: rgb(248, 219, 219); padding: 1em; border-radius: 10px; font-family: sans-serif;text-align: center;'><h1>Thank You {user.username}!</h1><div style=''>Your Email was verified successfully! You can go ahead and generate your wrap now</div></div></div></body>"
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
                 app_user.save()
                 return HttpResponseRedirect(
                     redirect_to="https://youtubewrapped.ml/login"
@@ -275,8 +281,19 @@ class RecaptchaVerifyAPI(generics.GenericAPIView):
         return JsonResponse(data={"verified": result["success"]})
 
 
-class TestThrottleAPI(generics.GenericAPIView):
-    throttle_scope = "anon"
+# class TestThrottleAPI(generics.GenericAPIView):
+#     throttle_scope = "anon"
 
-    def get(self, request, *args, **kwargs):
-        return JsonResponse(data={"status": "OK"})
+#     def get(self, request, *args, **kwargs):
+#         return JsonResponse(data={"status": "OK"})
+
+
+# class TestEmailTemplate(generics.GenericAPIView):
+#     def get(self, request, *args, **kwargs):
+#         subject, from_email, to = "hello", "from@example.com", "ytwrpd@gmail.com"
+#         text_content = "This is an important message."
+#         html_content = "<body> <div><div style='background-color: rgb(248, 219, 219); padding: 1em; border-radius: 10px; font-family: sans-serif;text-align: center;'><h1>Welcome To Youtube Wrapped!!</h1><div style=''>Please Verify your email by clicking the link below</div><div style='background: rgb(248 113 113);color: white;border: 0;border-radius: 5px;margin-top: 1em;'><a href='https://youtubewrapped.ml' target='_blank' style='text-decoration: none; font-size: 1.5rem; padding: 1em'>Verify</a></div></div></div></body>"
+#         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+#         msg.attach_alternative(html_content, "text/html")
+#         msg.send()
+#         return JsonResponse(data={"status": "OK"})
