@@ -1,0 +1,1 @@
+minikube service youtube-wrapped-server --url
