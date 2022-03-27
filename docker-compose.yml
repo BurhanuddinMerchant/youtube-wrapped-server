@@ -1,6 +1,9 @@
-version: '3'
+version: "3.9"
+   
 services:
   backend:
     build: .
+    env_file:
+      - dev.env
     ports:
-      - 8000:8000
+      - "8000:8000"

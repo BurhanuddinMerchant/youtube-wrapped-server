@@ -20,7 +20,7 @@ init.env.bash
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-
+entrypoint.sh
 # AWS User-specific
 .idea/**/aws.xml
 
