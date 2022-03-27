@@ -18,5 +18,6 @@ urlpatterns = [
     path("recaptcha", RecaptchaVerifyAPI.as_view(), name="verify_recaptcha"),
     path("test/stats", GetUserStatsTest.as_view()),
     path("test/generate", LoadNewUserStatsIntoS3Test.as_view()),
-    path("test/throttle", TestThrottleAPI.as_view()),
+    # path("test/throttle", TestThrottleAPI.as_view()),
+    # path("test/email", TestEmailTemplate.as_view(), name="test_email_template"),
 ]
