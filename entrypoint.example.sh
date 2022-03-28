@@ -11,6 +11,7 @@ export EMAIL_HOST_PASSWORD=
 export BASE_HOST_URL=
 export RECAPTCHA_SECRET_KEY=
 export RECAPTCHA_SITE_KEY=
+export ENV=
 
 python manage.py makemigrations
 python manage.py migrate
