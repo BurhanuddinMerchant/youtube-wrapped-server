@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: youtube-wrapped-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: youtube-wrapped-server
+  ports:
+    - port: 8000
+      targetPort: 8000
