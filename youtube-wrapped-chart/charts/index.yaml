@@ -3,12 +3,12 @@ entries:
   youtube-wrapped-chart:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-03-30T00:43:52.760928668+05:30"
+    created: "2022-03-31T20:54:03.271613714+05:30"
     description: Youtube Wrapped For Kubernetes
-    digest: 7fd7439ed5486fc41c0abe70e3212c4d7ab9fdd385236dcb7316951dee3e36af
+    digest: 02fb9498a10ece532ff768c0a0a559af9180d428212c10bed3b9cffb5804dfed
     name: youtube-wrapped-chart
     type: application
     urls:
     - youtube-wrapped-chart-0.1.0.tgz
     version: 0.1.0
-generated: "2022-03-30T00:43:52.760699962+05:30"
+generated: "2022-03-31T20:54:03.271310501+05:30"
