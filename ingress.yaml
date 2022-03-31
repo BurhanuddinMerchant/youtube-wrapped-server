@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: youtube-wrapped-server-ingress
+  labels:
+    name: youtube-wrapped-server-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: youtube-wrapped-server
+                port:
+                  number: 8000
