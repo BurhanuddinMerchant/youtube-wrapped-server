@@ -33,7 +33,7 @@ class CreateUserProfileSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserProfileSerializer(serializers.Serializer):
+class UserProfileNameSerializer(serializers.Serializer):
     def create(self, validated_data):
         request = self.context.get("request")
         user = AppUser.objects.filter(user=request.user).first()
@@ -65,3 +65,10 @@ class RecaptchaVerifySerializer(serializers.Serializer):
         request = self.context.get("request")
         token = request.query_params.get("token")
         return token
+
+
+class UserProfileSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = AppUser.objects.filter(user=request.user).first()
+        return user
