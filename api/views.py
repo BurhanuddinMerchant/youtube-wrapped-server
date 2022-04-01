@@ -14,6 +14,7 @@ from .serializers import (
     EmailVerificationSerializer,
     HandleMailSerializer,
     RecaptchaVerifySerializer,
+    UserProfileNameSerializer,
     UserProfileSerializer,
 )
 from rest_framework import generics
@@ -61,7 +62,7 @@ class UserRegistrationAPI(generics.GenericAPIView):
 
 class ResendVerificationEmailAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
     throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
@@ -88,7 +89,7 @@ class ResendVerificationEmailAPI(generics.GenericAPIView):
 
 class LoadNewUserStatsIntoS3(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
     throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
@@ -114,7 +115,7 @@ class LoadNewUserStatsIntoS3(generics.GenericAPIView):
 
 class CheckUserStatsStatus(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
     throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
@@ -135,7 +136,7 @@ class CheckUserStatsStatus(generics.GenericAPIView):
 
 class GetUserStats(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
     throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
@@ -154,7 +155,7 @@ class GetUserStats(generics.GenericAPIView):
 
 class GetUserStatsTest(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
     throttle_scope = "user"
 
     def get(self, request, *args, **kwargs):
@@ -172,7 +173,7 @@ class GetUserStatsTest(generics.GenericAPIView):
 
 class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
     throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
@@ -186,17 +187,13 @@ class LoadNewUserStatsIntoS3Test(generics.GenericAPIView):
         return JsonResponse(data={"message": "Successfully Retrieved"}, safe=False)
 
 
-class UserProfile(generics.GenericAPIView):
+class UserProfileName(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileNameSerializer
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
         return JsonResponse(data={"data": {"username": user.username}}, safe=False)
-
-    def delete(self, request, *args, **kwargs):
-        request.user.delete()
-        return JsonResponse({"message": "Account Deleted Successfully"})
 
 
 class HandleMail(generics.GenericAPIView):
@@ -279,6 +276,29 @@ class RecaptchaVerifyAPI(generics.GenericAPIView):
         )
         result = result.json()
         return JsonResponse(data={"verified": result["success"]})
+
+
+class UserProfileAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
+    throttle_scope = "user"
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        resp = {
+            "username": user.username,
+            "email": user.email,
+            "is_active": user.is_active,
+            "are_stats_generated": user.are_stats_generated,
+            "date_joined": user.user.date_joined,
+        }
+        return JsonResponse(data={"user": resp})
+
+    def delete(self, request, *args, **kwargs):
+        request.user.delete()
+        return JsonResponse({"message": "Account Deleted Successfully"})
 
 
 # class TestThrottleAPI(generics.GenericAPIView):
