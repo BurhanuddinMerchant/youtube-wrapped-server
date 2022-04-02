@@ -297,6 +297,16 @@ class UserProfileAPI(generics.GenericAPIView):
         return JsonResponse(data={"user": resp})
 
     def delete(self, request, *args, **kwargs):
+        subject, from_email, to = (
+            "Regarding YouTube Wrapped Profile Deletion",
+            "ytwrpd@gmail.com",
+            request.user.email,
+        )
+        text_content = "Sad to see you go, {request.user.username} :( .Your Youtube Wrapped Profile has been deleted successfully. Hope to see you back very soon :)"
+        html_content = f"<body> <div><div style='background-color: rgb(248, 219, 219); padding: 1em; border-radius: 10px; font-family: sans-serif;text-align: center;'><h1>Sad to see you go, {request.user.username} :(</h1><div>Your Youtube Wrapped Profile has been deleted successfully. Hope to see you back very soon :)</div></div></body>"
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         request.user.delete()
         return JsonResponse({"message": "Account Deleted Successfully"})
 
