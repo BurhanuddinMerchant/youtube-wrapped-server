@@ -14,6 +14,7 @@ from .serializers import (
     EmailVerificationSerializer,
     HandleMailSerializer,
     RecaptchaVerifySerializer,
+    ResetPasswordSerializer,
     UserProfileNameSerializer,
     UserProfileSerializer,
 )
@@ -25,6 +26,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives, EmailMessage
 from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth.models import User
 import requests
+from rest_framework import status
 
 session = boto3.Session(
     aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY
@@ -309,6 +311,24 @@ class UserProfileAPI(generics.GenericAPIView):
         msg.send()
         request.user.delete()
         return JsonResponse({"message": "Account Deleted Successfully"})
+
+
+class ResetPasswordAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ResetPasswordSerializer
+    throttle_scope = "user"
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reset = serializer.save()
+        if reset:
+            return JsonResponse(data={"user": "Password Reset Successful"})
+        else:
+            return Response(
+                {"old_password": ["Wrong password."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 # class TestThrottleAPI(generics.GenericAPIView):

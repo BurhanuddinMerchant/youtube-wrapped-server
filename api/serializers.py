@@ -72,3 +72,18 @@ class UserProfileSerializer(serializers.Serializer):
         request = self.context.get("request")
         user = AppUser.objects.filter(user=request.user).first()
         return user
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=256)
+    new_password = serializers.CharField(max_length=256)
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = request.user
+        if not user.check_password(validated_data["old_password"]):
+            return False
+        else:
+            user.set_password(validated_data["new_password"])
+            user.save()
+        return True
