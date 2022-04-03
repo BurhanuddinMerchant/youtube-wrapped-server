@@ -14,6 +14,7 @@ from .serializers import (
     EmailVerificationSerializer,
     HandleMailSerializer,
     RecaptchaVerifySerializer,
+    ResetPasswordSerializer,
     UserProfileNameSerializer,
     UserProfileSerializer,
 )
@@ -314,21 +315,20 @@ class UserProfileAPI(generics.GenericAPIView):
 
 class ResetPasswordAPI(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserProfileSerializer
+    serializer_class = ResetPasswordSerializer
     throttle_scope = "user"
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        appuser = serializer.save()
-        if not self.object.check_password(request.data["old_password"]):
+        reset = serializer.save()
+        if reset:
+            return JsonResponse(data={"user": "Password Reset Successful"})
+        else:
             return Response(
                 {"old_password": ["Wrong password."]},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        appuser.user.set_password(request.data["new_password"])
-        appuser.user.save()
-        return JsonResponse(data={"user": "Password Reset Successful"})
 
 
 # class TestThrottleAPI(generics.GenericAPIView):
