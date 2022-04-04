@@ -48,14 +48,14 @@ class EmailVerificationSerializer(serializers.Serializer):
 
 
 class HandleMailSerializer(serializers.Serializer):
-    class Meta:
-        fields = ("name", "message", "email")
+    name = serializers.CharField(max_length=256)
+    email = serializers.EmailField()
+    message = serializers.CharField()
 
     def create(self, validated_data):
-        request = self.context.get("request")
-        name = request.data["name"]
-        message = request.data["message"]
-        email = request.data["email"]
+        name = validated_data["name"]
+        message = validated_data["message"]
+        email = validated_data["email"]
         Email = {"name": name, "message": message, "email": email}
         return Email
 
