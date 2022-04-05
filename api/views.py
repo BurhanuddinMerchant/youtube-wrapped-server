@@ -12,6 +12,7 @@ from .models import AppUser
 from .serializers import (
     CreateUserProfileSerializer,
     EmailVerificationSerializer,
+    ForgotPasswordSerializer,
     HandleMailSerializer,
     RecaptchaVerifySerializer,
     ResetPasswordSerializer,
@@ -329,6 +330,14 @@ class ResetPasswordAPI(generics.GenericAPIView):
                 {"old_password": ["Wrong password."]},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class ForgotPasswordAPI(generics.GenericAPIView):
+    serializer_class = ForgotPasswordSerializer
+    throttle_scope = "anon"
+
+    def post(self, request, *args, **kwargs):
+        return JsonResponse(data={"message": "Password Reset Successful"})
 
 
 # class TestThrottleAPI(generics.GenericAPIView):

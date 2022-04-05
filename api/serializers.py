@@ -87,3 +87,8 @@ class ResetPasswordSerializer(serializers.Serializer):
             user.set_password(validated_data["new_password"])
             user.save()
         return True
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    def create(self, validated_data):
+        pass
