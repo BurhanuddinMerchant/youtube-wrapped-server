@@ -15,6 +15,7 @@ urlpatterns = [
         "email/resend", ResendVerificationEmailAPI.as_view(), name="verify_email_resend"
     ),
     path("password/reset", ResetPasswordAPI.as_view(), name="reset_password"),
+    path("password/forgot", ForgotPasswordAPI.as_view(), name="forgot_password"),
     path("token", TokenObtainPairView.as_view(), name="login"),
     path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("recaptcha", RecaptchaVerifyAPI.as_view(), name="verify_recaptcha"),
