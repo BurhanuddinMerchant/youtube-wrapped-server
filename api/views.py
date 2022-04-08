@@ -196,7 +196,10 @@ class UserProfileName(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         user = AppUser.objects.filter(user=request.user).first()
-        return JsonResponse(data={"data": {"username": user.username}}, safe=False)
+        return JsonResponse(
+            data={"data": {"username": user.username, "avatar": user.avatar}},
+            safe=False,
+        )
 
 
 class HandleMail(generics.GenericAPIView):
@@ -296,6 +299,7 @@ class UserProfileAPI(generics.GenericAPIView):
             "is_active": user.is_active,
             "are_stats_generated": user.are_stats_generated,
             "date_joined": user.user.date_joined,
+            "avatar": user.avatar,
         }
         return JsonResponse(data={"user": resp})
 
