@@ -16,6 +16,7 @@ from .serializers import (
     HandleMailSerializer,
     RecaptchaVerifySerializer,
     ResetPasswordSerializer,
+    UserAvatarSerializer,
     UserProfileNameSerializer,
     UserProfileSerializer,
 )
@@ -342,6 +343,18 @@ class ForgotPasswordAPI(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         return JsonResponse(data={"message": "Password Reset Successful"})
+
+
+class UserAvatarAPI(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserAvatarSerializer
+    throttle_scope = "user"
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return JsonResponse(data={"message": "avatar updated successfully"})
 
 
 # class TestThrottleAPI(generics.GenericAPIView):

@@ -6,6 +6,7 @@ urlpatterns = [
     path("register", UserRegistrationAPI.as_view(), name="signup"),
     path("generate", LoadNewUserStatsIntoS3.as_view(), name="generate_stats"),
     path("profile", UserProfileAPI.as_view(), name="user_profile"),
+    path("avatar", UserAvatarAPI.as_view(), name="user_avatar"),
     path("profile/name", UserProfileName.as_view(), name="user_profile_name"),
     path("stats", GetUserStats.as_view(), name="user_stats"),
     path("check", CheckUserStatsStatus.as_view(), name="check_user_status"),
