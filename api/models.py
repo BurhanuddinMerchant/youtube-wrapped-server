@@ -6,6 +6,7 @@ import uuid
 
 # Create your models here.
 class AppUser(models.Model):
+    AVATAR_CHOICES = (("male", "male"), ("female", "female"), ("human", "human"))
     user = models.OneToOneField(User, on_delete=CASCADE, null=True, blank=True)
     auth_token = models.CharField(max_length=256, blank=True, default="", null=True)
     username = models.CharField(max_length=256)
@@ -14,6 +15,9 @@ class AppUser(models.Model):
     stats_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     are_stats_generated = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    avatar = models.CharField(
+        choices=AVATAR_CHOICES, default="human", blank=True, null=True, max_length=10
+    )
 
     def __str__(self) -> str:
         return self.username
