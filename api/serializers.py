@@ -1,3 +1,4 @@
+from asyncio import constants
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import AppUser
@@ -92,3 +93,14 @@ class ResetPasswordSerializer(serializers.Serializer):
 class ForgotPasswordSerializer(serializers.Serializer):
     def create(self, validated_data):
         pass
+
+
+class UserAvatarSerializer(serializers.Serializer):
+    avatar = serializers.CharField(max_length=10)
+
+    def create(self, validated_data):
+        request = self.context.get("request")
+        user = AppUser.objects.filter(user=request.user).first()
+        user.avatar = validated_data["avatar"]
+        user.save()
+        return user
