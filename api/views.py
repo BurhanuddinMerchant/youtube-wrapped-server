@@ -16,6 +16,7 @@ from .serializers import (
     HandleMailSerializer,
     RecaptchaVerifySerializer,
     ResetPasswordSerializer,
+    TokenQuerySerializer,
     UserAvatarSerializer,
     UserProfileNameSerializer,
     UserProfileSerializer,
@@ -30,6 +31,7 @@ from django.contrib.auth.models import User
 import requests
 from rest_framework import status
 from django.template.loader import get_template
+from drf_yasg.utils import swagger_auto_schema
 
 session = boto3.Session(
     aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY
@@ -227,6 +229,12 @@ class EmailVerification(generics.GenericAPIView):
     serializer_class = EmailVerificationSerializer
     throttle_scope = "user"
 
+    @swagger_auto_schema(
+        query_serializer=TokenQuerySerializer,
+        security=[],
+        operation_id="Verify Email",
+        operation_description="This endpoint is used to verify the email",
+    )
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -270,6 +278,12 @@ class RecaptchaVerifyAPI(generics.GenericAPIView):
     serializer_class = RecaptchaVerifySerializer
     throttle_scope = "anon"
 
+    @swagger_auto_schema(
+        query_serializer=TokenQuerySerializer,
+        security=[],
+        operation_id="Recaptcha Verification",
+        operation_description="This endpoint is used for recaptcha verification",
+    )
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

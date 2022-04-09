@@ -104,3 +104,10 @@ class UserAvatarSerializer(serializers.Serializer):
         user.avatar = validated_data["avatar"]
         user.save()
         return user
+
+
+class TokenQuerySerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=512)
+
+    def create(self, validated_data):
+        return validated_data["token"]
