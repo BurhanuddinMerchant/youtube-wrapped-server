@@ -15,6 +15,7 @@ urlpatterns = [
     path(
         "email/resend", ResendVerificationEmailAPI.as_view(), name="verify_email_resend"
     ),
+    path("share", SharableWrapAPI.as_view(), name="sharable_wrap"),
     path("password/reset", ResetPasswordAPI.as_view(), name="reset_password"),
     path("password/forgot", ForgotPasswordAPI.as_view(), name="forgot_password"),
     path("token", TokenObtainPairView.as_view(), name="login"),

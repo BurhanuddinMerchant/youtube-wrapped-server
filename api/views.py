@@ -1,5 +1,8 @@
+from html2image import Html2Image
 from time import sleep
 import boto3
+import base64
+
 from rest_framework.permissions import IsAuthenticated
 import os
 from api.utils import get_tokens_for_user, requestHelper
@@ -23,7 +26,7 @@ from .serializers import (
 )
 from rest_framework import generics
 from rest_framework.response import Response
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import FileResponse, HttpResponseRedirect, JsonResponse
 import json
 from django.core.mail import send_mail, EmailMultiAlternatives, EmailMessage
 from rest_framework_simplejwt.tokens import AccessToken
@@ -375,6 +378,37 @@ class TestThrottleAPI(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return JsonResponse(data={"status": "OK"})
+
+
+class SharableWrapAPI(generics.GenericAPIView):
+    # permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
+    # throttle_scope = "user"
+    def get(self, request, *args, **kwargs):
+        data = {
+            "username": "Burhanuddin",
+            "most_viewed_topic": "Lifestyle",
+            "most_viewed_tag": "Cars",
+            "most_viewed_channel": "Tanmay Shah",
+            "top_topic": ["topic_1", "topic_2", "topic_3"],
+            "top_tag": ["tag_1", "tag_2", "tag_3"],
+            "top_channel": ["channel_1", "channel_2", "channel_3"],
+        }
+        html = get_template("sharable.html").render(data)
+
+        hti = Html2Image()
+        path = hti.screenshot(
+            html_str=html,
+            save_as="wrap_.png",
+            size=(1080, 1920),
+        )
+        print(path)
+        # image = open(path[0], "rb")
+
+        with open(path[0], "rb") as image_file:
+            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+        # return FileResponse(image)
+        return JsonResponse(data={"message": "hereisit", "image": image_data})
 
 
 class TestEmailTemplate(generics.GenericAPIView):
