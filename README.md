@@ -9,7 +9,8 @@
 #### Access the system Architecture over [here](https://youtubewrapped.ml)
 
 <hr/>
-Kubernetes Auto-Scaling in Action
+
+### Kubernetes Auto-Scaling in Action
 
 ![Kubernetes Dashboard 1](https://github.com/BurhanuddinMerchant/youtube-wrapped-server/blob/main/assets/k8d1.jpeg?raw=true)
 
