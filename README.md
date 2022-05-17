@@ -8,6 +8,8 @@
 
 #### Access the system Architecture over [here](https://youtubewrapped.ml)
 
+#### I have made a step by step explainer video for generating your own wrapped , access it [here](https://www.youtube.com/watch?v=V7JnDTsLDbk&feature=emb_logo)
+
 <hr/>
 
 ### Kubernetes Auto-Scaling in Action
