@@ -11,21 +11,21 @@
 <hr/>
 Kubernetes Auto-Scaling in Action
 
-![Kubernetes Dashboard 1](https://github.com/BurhanuddinMerchant/youtube-wrapped/blob/main/assets/k8d1.jpeg?raw=true)
+![Kubernetes Dashboard 1](https://github.com/BurhanuddinMerchant/youtube-wrapped-server/blob/main/assets/k8d1.jpeg?raw=true)
 
-![Kubernetes Dashboard 2](https://github.com/BurhanuddinMerchant/youtube-wrapped/blob/main/assets/k8d2.jpeg?raw=true)
+![Kubernetes Dashboard 2](https://github.com/BurhanuddinMerchant/youtube-wrapped-server/blob/main/assets/k8d2.jpeg?raw=true)
 
 Youtube Wrapped Admin
 
-![Admin](https://github.com/BurhanuddinMerchant/youtube-wrapped/blob/main/assets/admin.png?raw=true)
+![Admin](https://github.com/BurhanuddinMerchant/youtube-wrapped-server/blob/main/assets/admin.png?raw=true)
 
 Swagger API Documentation
 
-![Swagger](https://github.com/BurhanuddinMerchant/youtube-wrapped/blob/main/assets/swagger.png?raw=true)
+![Swagger](https://github.com/BurhanuddinMerchant/youtube-wrapped-server/blob/main/assets/swagger.png?raw=true)
 
 Silk Request Profiling
 
-![Silk](https://github.com/BurhanuddinMerchant/youtube-wrapped/blob/main/assets/silk.png?raw=true)
+![Silk](https://github.com/BurhanuddinMerchant/youtube-wrapped-server/blob/main/assets/silk.png?raw=true)
 
 <hr/>
 
