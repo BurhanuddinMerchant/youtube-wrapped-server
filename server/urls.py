@@ -35,7 +35,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
-    path("silk", include("silk.urls", namespace="silk")),
+    # path("silk", include("silk.urls", namespace="silk")),
 ]
 urlpatterns += [
     re_path(
