@@ -30,8 +30,16 @@ DEBUG = os.environ["DEBUG"]
 
 ALLOWED_HOSTS = ["*"]
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = ("http://localhost:3000", "https://youtubewrapped.ml")
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://youtubewrapped.ml"]
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3000",
+    "https://youtubewrapped.ml",
+    "https://youtubewrapped-0b4jn584.b4a.run",
+)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://youtubewrapped.ml",
+    "https://youtubewrapped-0b4jn584.b4a.run",
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -85,7 +93,6 @@ WSGI_APPLICATION = "server.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 if os.environ.get("ENV") == "DEV":
-
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
