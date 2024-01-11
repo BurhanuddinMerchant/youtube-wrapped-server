@@ -6,5 +6,6 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 RUN chmod +x /code/entrypoint.sh
+RUN chmod +x /code/create_superuser.sh
 EXPOSE 8000
-ENTRYPOINT  [ "/code/entrypoint.sh" ]
+ENTRYPOINT  [ "/code/entrypoint.sh" ] 
