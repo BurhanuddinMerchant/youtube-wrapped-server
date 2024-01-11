@@ -35,11 +35,12 @@ CORS_ORIGIN_WHITELIST = (
     "https://youtubewrapped.ml",
     "https://youtubewrapped-0b4jn584.b4a.run",
 )
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://youtubewrapped.ml",
-    "https://youtubewrapped-0b4jn584.b4a.run",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "https://youtubewrapped.ml",
+#     "https://youtubewrapped-0b4jn584.b4a.run",
+# ]
+CORS_ALLOWED_ORIGINS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
